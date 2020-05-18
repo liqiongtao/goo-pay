@@ -2,7 +2,7 @@ package gooHttp
 
 import (
 	"bytes"
-	gooLog "goo/log"
+	gooLog "googo.io/goo/log"
 	"io"
 	"mime/multipart"
 	"os"

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	gooHttp "goo/http"
+	gooHttp "googo.io/goo/http"
 	"net/url"
 	"strings"
 	"time"

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	gooLog "goo/log"
+	gooLog "googo.io/goo/log"
 	"io/ioutil"
 	"net/http"
 	"reflect"

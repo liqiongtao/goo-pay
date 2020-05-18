@@ -2,7 +2,7 @@ package gooCache
 
 import (
 	"github.com/go-redis/redis"
-	"goo/log"
+	gooLog "googo.io/goo/log"
 )
 
 func NewRedis(cf Config) *redis.Client {

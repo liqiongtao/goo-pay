@@ -2,9 +2,9 @@ package gooWeixin
 
 import (
 	"fmt"
-	"goo"
-	gooLog "goo/log"
-	gooUtils "goo/utils"
+	"googo.io/goo"
+	gooLog "googo.io/goo/log"
+	gooUtils "googo.io/goo/utils"
 	"net/url"
 	"strings"
 	"time"

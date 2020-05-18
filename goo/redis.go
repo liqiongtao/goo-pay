@@ -2,7 +2,7 @@ package goo
 
 import (
 	"github.com/go-redis/redis"
-	"goo/cache"
+	gooCache "googo.io/goo/cache"
 )
 
 func InitRedis(cf gooCache.Config) {

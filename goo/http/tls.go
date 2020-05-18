@@ -2,7 +2,7 @@ package gooHttp
 
 import (
 	"crypto/tls"
-	gooLog "goo/log"
+	gooLog "googo.io/goo/log"
 	"io/ioutil"
 )
 

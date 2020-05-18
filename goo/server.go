@@ -2,8 +2,8 @@ package goo
 
 import (
 	"github.com/gin-gonic/gin"
-	"goo/log"
-	"goo/server"
+	gooLog "googo.io/goo/log"
+	gooServer "googo.io/goo/server"
 )
 
 func Gin() *gooServer.GinEngine {

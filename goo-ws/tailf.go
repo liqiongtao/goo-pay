@@ -2,13 +2,12 @@ package ws
 
 import (
 	"bytes"
-	gooLog "goo/log"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	gooLog "googo.io/goo/log"
 	"net/url"
 	"os"
 	"time"
-
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 )
 
 type tailF struct {

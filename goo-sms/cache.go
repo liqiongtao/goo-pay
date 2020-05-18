@@ -2,7 +2,7 @@ package gooSms
 
 import (
 	"fmt"
-	"goo"
+	"googo.io/goo"
 	"time"
 )
 

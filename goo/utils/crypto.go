@@ -15,7 +15,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -89,7 +88,6 @@ func AES256ECBDecrypt(buf, key []byte) ([]byte, error) {
 		return nil, err
 	}
 	blockSize := cipher.BlockSize()
-	fmt.Println("=======1===", len(buf), blockSize)
 	decrypted := make([]byte, len(buf))
 	for bs, be := 0, blockSize; bs < len(buf); bs, be = bs+blockSize, be+blockSize {
 		cipher.Decrypt(decrypted[bs:be], buf[bs:be])
@@ -97,15 +95,6 @@ func AES256ECBDecrypt(buf, key []byte) ([]byte, error) {
 	paddingSize := int(decrypted[len(decrypted)-1])
 	return decrypted[0 : len(decrypted)-paddingSize], nil
 }
-
-// func pkcs7unpadding(plantText []byte, blockSize int) []byte {
-// 	length := len(plantText)
-// 	unpadding := int(plantText[length-1])
-// 	if length < unpadding {
-// 		return nil
-// 	}
-// 	return plantText[:(length - unpadding)]
-// }
 
 func Encrypt(origData, key, iv []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)

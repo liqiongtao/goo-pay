@@ -3,12 +3,11 @@ package gooUpload
 import (
 	"bytes"
 	"fmt"
-	gooUtils "goo/utils"
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	gooUtils "googo.io/goo/utils"
 	"io/ioutil"
 	"os"
 	"path"
-
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 )
 
 // 定义main文件，然后调用ossScript()

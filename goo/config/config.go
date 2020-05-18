@@ -1,7 +1,7 @@
 package gooConfig
 
 import (
-	gooLog "goo/log"
+	gooLog "googo.io/goo/log"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )

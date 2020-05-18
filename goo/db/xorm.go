@@ -4,7 +4,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
-	"goo/log"
+	gooLog "googo.io/goo/log"
 	"xorm.io/core"
 )
 

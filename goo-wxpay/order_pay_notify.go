@@ -3,7 +3,6 @@ package gooWXPay
 import (
 	"encoding/xml"
 	"errors"
-	gooUtils "goo/utils"
 	"strings"
 )
 

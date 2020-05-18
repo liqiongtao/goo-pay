@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"crypto/x509"
-	gooLog "goo/log"
+	gooLog "googo.io/goo/log"
 	"io"
 	"io/ioutil"
 	"net/http"

@@ -2,7 +2,7 @@ package goo
 
 import (
 	"github.com/go-xorm/xorm"
-	"goo/db"
+	gooDB "googo.io/goo/db"
 )
 
 func InitDB(cf gooDB.Config) {

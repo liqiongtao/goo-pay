@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"goo"
-	gooHttp "goo/http"
+	"googo.io/goo"
+	gooHttp "googo.io/goo/http"
 )
 
 func MenuCreate(appid, secret, content string) error {

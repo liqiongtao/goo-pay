@@ -1,9 +1,8 @@
 package ws
 
 import (
-	"net/http"
-
 	"github.com/gorilla/websocket"
+	"net/http"
 )
 
 var (

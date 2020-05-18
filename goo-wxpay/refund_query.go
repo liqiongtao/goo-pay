@@ -4,9 +4,6 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	gooHttp "goo/http"
-	gooLog "goo/log"
-	gooUtils "goo/utils"
 	"strings"
 )
 

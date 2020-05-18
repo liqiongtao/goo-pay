@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"goo"
-	gooHttp "goo/http"
-	gooLog "goo/log"
+	"googo.io/goo"
+	gooHttp "googo.io/goo/http"
+	gooLog "googo.io/goo/log"
 	"sync"
 	"time"
 )

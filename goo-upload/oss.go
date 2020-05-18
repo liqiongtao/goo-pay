@@ -3,11 +3,10 @@ package gooUpload
 import (
 	"bytes"
 	"fmt"
-	gooLog "goo/log"
-	gooUtils "goo/utils"
-	"path"
-
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	gooLog "googo.io/goo/log"
+	gooUtils "googo.io/goo/utils"
+	"path"
 )
 
 var Oss *gooOss

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	gooLog "goo/log"
+	gooLog "googo.io/goo/log"
 	"math/rand"
 	"strconv"
 	"time"

@@ -1,10 +1,9 @@
 package gooMQ
 
 import (
-	gooLog "goo/log"
-	"sync"
-
 	"github.com/streadway/amqp"
+	gooLog "googo.io/goo/log"
+	"sync"
 )
 
 type Rabbitmq struct {

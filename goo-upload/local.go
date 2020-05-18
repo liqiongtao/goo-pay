@@ -1,11 +1,10 @@
 package gooUpload
 
 import (
-	gooUtils "goo/utils"
+	gooUtils "googo.io/goo/utils"
 	"io/ioutil"
 	"os"
 	"path"
-
 	"github.com/gin-gonic/gin"
 )
 
