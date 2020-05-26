@@ -27,5 +27,7 @@ func (i *LogInfo) Bytes() []byte {
 		bf.WriteString(fmt.Sprintf("%40s", fmt.Sprint(msg)))
 	}
 
+	bf.WriteString("\r\n")
+
 	return bf.Bytes()
 }

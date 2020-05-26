@@ -27,19 +27,19 @@ func Default() *Logger {
 }
 
 func (l *Logger) Info(v ...interface{}) {
-	go l.output(LEVEL_INFO, v...)
+	l.output(LEVEL_INFO, v...)
 }
 
 func (l *Logger) Debug(v ...interface{}) {
-	go l.output(LEVEL_DEBUG, v...)
+	l.output(LEVEL_DEBUG, v...)
 }
 
 func (l *Logger) Warn(v ...interface{}) {
-	go l.output(LEVEL_WARN, v...)
+	l.output(LEVEL_WARN, v...)
 }
 
 func (l *Logger) Error(v ...interface{}) {
-	go l.output(LEVEL_ERROR, v...)
+	l.output(LEVEL_ERROR, v...)
 }
 
 func (l *Logger) output(level Level, v ...interface{}) {
