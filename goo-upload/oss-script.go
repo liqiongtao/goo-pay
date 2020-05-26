@@ -15,14 +15,14 @@ import (
 
 var (
 	// endpoint        = "oss-cn-beijing.aliyuncs.com"
-	// accessKeyId     = "LTAI4FgvJahHNG4Ta5PfH8dh"
-	// accessKeySecret = "4PXMVEYz9fh0xtFpdKlBSoHPARmXL9"
-	// bucketName      = "letou"
+	// accessKeyId     = ""
+	// accessKeySecret = ""
+	// bucketName      = ""
 
 	endpoint        = "oss-cn-beijing.aliyuncs.com"
-	accessKeyId     = "LTAI4Fic5mt5HnzEZhvJodrX"
-	accessKeySecret = "rhnauCqqQT1btPLJ77vkMupH9WygOK"
-	bucketName      = "wxfx-ios"
+	accessKeyId     = ""
+	accessKeySecret = ""
+	bucketName      = ""
 )
 
 func ossScript(endpoint, accessKeyId, accessKeySecret, bucketName string) {
