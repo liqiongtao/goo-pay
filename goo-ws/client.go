@@ -3,6 +3,7 @@ package ws
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	gooLog "googo.io/goo/log"
 )
 
 type Client struct {
