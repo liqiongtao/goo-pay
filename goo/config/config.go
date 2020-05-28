@@ -6,15 +6,16 @@ import (
 	"io/ioutil"
 )
 
-func LoadFile(filename string, config interface{}) {
+func LoadFile(filename string, config interface{}) error {
 	bts, err := ioutil.ReadFile(filename)
-
 	if err != nil {
 		gooLog.Error(err.Error())
-		return
+		return err
 	}
 
-	if err := yaml.Unmarshal(bts, config); err != nil {
+	err = yaml.Unmarshal(bts, config)
+	if err != nil {
 		gooLog.Error(err.Error())
 	}
+	return err
 }
