@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"googo.io/goo"
 	gooHttp "googo.io/goo/http"
+	gooLog "googo.io/goo/log"
 	"net/url"
 	"strings"
 	"time"
@@ -20,7 +22,14 @@ func Oauth2AuthorizeUrl(appid, authorizeUrl, originUrl string) string {
 	} else {
 		redirectUrl = url.QueryEscape(authorizeUrl + "?redirect_url=" + url.QueryEscape(originUrl))
 	}
-	return fmt.Sprintf(oauth2_authorize_url, appid, redirectUrl, state)
+	oauth2Url := fmt.Sprintf(oauth2_authorize_url, appid, redirectUrl, state)
+	gooLog.Debug("wx-h5-oauth2", goo.Params{
+		"authorizeUrl": authorizeUrl,
+		"originUrl":    originUrl,
+		"redirectUrl":  redirectUrl,
+		"oauth2Url":    oauth2Url,
+	})
+	return oauth2Url
 }
 
 type Oauth2AccessTokenResponse struct {
