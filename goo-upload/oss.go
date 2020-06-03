@@ -9,18 +9,18 @@ import (
 	"path"
 )
 
-var Oss *gooOss
+var OSS *gooOSS
 
-func InitOss(config OssConfig) {
+func InitOSS(config OSSConfig) {
 	var err error
-	Oss, err = NewOss(config)
+	OSS, err = NewOSS(config)
 	if err != nil {
 		gooLog.Error(err.Error())
 	}
 }
 
-func NewOss(config OssConfig) (*gooOss, error) {
-	this := &gooOss{
+func NewOSS(config OSSConfig) (*gooOSS, error) {
+	this := &gooOSS{
 		Config: config,
 	}
 
@@ -41,13 +41,13 @@ func NewOss(config OssConfig) (*gooOss, error) {
 	return this, nil
 }
 
-type gooOss struct {
-	Config OssConfig
+type gooOSS struct {
+	Config OSSConfig
 	Client *oss.Client
 	Bucket *oss.Bucket
 }
 
-func (this *gooOss) Upload(filename string, body []byte) (string, error) {
+func (this *gooOSS) Upload(filename string, body []byte) (string, error) {
 	md5str := gooUtils.MD5(body)
 	filename = fmt.Sprintf("%s/%s/%s%s", md5str[0:2], md5str[2:4], md5str[8:24], path.Ext(filename))
 
@@ -63,10 +63,10 @@ func (this *gooOss) Upload(filename string, body []byte) (string, error) {
 	return url, nil
 }
 
-func (this *gooOss) getClient() (*oss.Client, error) {
+func (this *gooOSS) getClient() (*oss.Client, error) {
 	return oss.New(this.Config.Endpoint, this.Config.AccessKeyId, this.Config.AccessKeySecret)
 }
 
-func (this *gooOss) getBucket() (*oss.Bucket, error) {
+func (this *gooOSS) getBucket() (*oss.Bucket, error) {
 	return this.Client.Bucket(this.Config.Bucket)
 }

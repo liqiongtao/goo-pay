@@ -1,6 +1,6 @@
 package gooUpload
 
-type OssConfig struct {
+type OSSConfig struct {
 	AccessKeyId     string `yaml:"access_key_id"`
 	AccessKeySecret string `yaml:"access_key_secret"`
 	Endpoint        string `yaml:"endpoint"`
