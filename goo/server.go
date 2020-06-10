@@ -16,6 +16,7 @@ func Handler(controller gooServer.IController) gin.HandlerFunc {
 
 func Exception(code int, message string) {
 	panic(gooServer.Response{
+		Status:  0,
 		Code:    code,
 		Message: message,
 		Data:    map[string]string{},
@@ -27,7 +28,8 @@ func Success(data interface{}) {
 		data = map[string]string{}
 	}
 	panic(gooServer.Response{
-		Code:    0,
+		Status:  1,
+		Code:    200,
 		Message: "ok",
 		Data:    data,
 	})
@@ -40,7 +42,6 @@ func AsyncFunc(f func()) {
 				gooLog.Error(err)
 			}
 		}()
-
 		f()
 	}(f)
 }
