@@ -84,7 +84,7 @@ func recovery() gin.HandlerFunc {
 
 func cors() gin.HandlerFunc {
 	allowHeaders := "Content-Type, Content-Length, Authorization, Accept, Referer, User-Agent, " +
-		"X-Requested-Id, X-Request-Timestamp, X-Request-Sign, X-Request-Source, X-Request-Token"
+		"X-Requested-Id, X-Request-Timestamp, X-Request-Sign, X-Request-AppID, X-Request-Source, X-Request-Token"
 
 	return func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
