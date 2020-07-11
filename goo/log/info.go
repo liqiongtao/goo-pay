@@ -24,7 +24,7 @@ func (i *LogInfo) Bytes() []byte {
 
 	for _, msg := range i.Trace {
 		bf.WriteString("\r\n")
-		bf.WriteString(fmt.Sprintf("%40s", fmt.Sprint(msg)))
+		bf.WriteString(fmt.Sprintf(" %s", fmt.Sprint(msg)))
 	}
 
 	bf.WriteString("\r\n")
