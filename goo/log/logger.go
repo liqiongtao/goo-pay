@@ -60,6 +60,11 @@ func (l *Logger) output(level Level, v ...interface{}) {
 		for i := 4; i < 12; i++ {
 			if _, file, line, ok := runtime.Caller(i); ok {
 				filename := strings.Split(file, "src/")[1]
+				if strings.Index(filename, "vendor") != -1 ||
+					strings.Index(filename, "runtime") != -1 ||
+					strings.Index(filename, "net") != -1 {
+					continue
+				}
 				info.Trace = append(info.Trace, fmt.Sprintf("%s %dL", filename, line))
 			}
 		}
