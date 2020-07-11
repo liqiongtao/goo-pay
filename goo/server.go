@@ -35,13 +35,13 @@ func Success(data interface{}) {
 	})
 }
 
-func AsyncFunc(f func()) {
-	go func(f func()) {
+func AsyncFunc(fn func()) {
+	go func(fn func()) {
 		defer func() {
 			if err := recover(); err != nil {
 				gooLog.Error(err)
 			}
 		}()
-		f()
-	}(f)
+		fn()
+	}(fn)
 }

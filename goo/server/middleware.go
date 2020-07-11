@@ -73,7 +73,7 @@ func recovery() gin.HandlerFunc {
 					c.Set("Response", err.(Response))
 					c.JSON(http.StatusOK, err.(Response))
 				default:
-					c.String(http.StatusOK, err.(string))
+					c.String(http.StatusOK, fmt.Sprint(err))
 				}
 				c.Abort()
 			}
