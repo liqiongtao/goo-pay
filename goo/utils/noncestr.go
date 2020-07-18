@@ -1,10 +1,10 @@
 package gooUtils
 
 import (
-	"strconv"
 	"time"
+	"strings"
 )
 
 func NonceStr() string {
-	return strconv.FormatInt(time.Now().UnixNano(), 10)
+	return strings.ToLower(Id2Code(time.Now().UnixNano()))
 }
