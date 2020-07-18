@@ -41,7 +41,7 @@ func logger(g *GinEngine) gin.HandlerFunc {
 		bf.WriteString(fmt.Sprintf("\"uri\":\"%s\",", c.Request.RequestURI))
 		bf.WriteString(fmt.Sprintf("\"body\":\"%s\",", body))
 		bf.WriteString(fmt.Sprintf("\"authorization\":\"%s\",", c.GetHeader("Authorization")))
-		bf.WriteString(fmt.Sprintf("\"x-request-source\":\"%s\",", c.GetHeader("X-Request-Source")))
+		bf.WriteString(fmt.Sprintf("\"x-request-id\":\"%s\",", c.GetHeader("X-Request-Id")))
 		bf.WriteString(fmt.Sprintf("\"x-request-timestamp\":\"%s\",", c.GetHeader("X-Request-Timestamp")))
 		bf.WriteString(fmt.Sprintf("\"x-request-sign\":\"%s\",", c.GetHeader("X-Request-Sign")))
 		bf.WriteString(fmt.Sprintf("\"content-type\":\"%s\",", c.ContentType()))
@@ -84,7 +84,7 @@ func recovery() gin.HandlerFunc {
 
 func cors() gin.HandlerFunc {
 	allowHeaders := "Content-Type, Content-Length, Authorization, Accept, Referer, User-Agent, " +
-		"X-Requested-Id, X-Request-Timestamp, X-Request-Sign, X-Request-AppID, X-Request-Source, X-Request-Token"
+		"X-Requested-Id, X-Request-Timestamp, X-Request-Sign, X-Request-AppId, X-Request-Source, X-Request-Token"
 
 	return func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
