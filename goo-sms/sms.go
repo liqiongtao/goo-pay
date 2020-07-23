@@ -2,7 +2,7 @@ package gooSms
 
 type ISms interface {
 	Init()
-	Send(mobile, action string) error
+	Send(mobile, action string) (string, error)
 	Verify(mobile, action, code string) error
 }
 

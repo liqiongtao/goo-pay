@@ -1,1 +1,1 @@
-gooSms.Init(gooSms.SmsAliyun{Config: config.Config.Sms})
+gooSms.Init(&gooSms.SmsAliyun{Config: config.Config.Sms})

@@ -22,7 +22,7 @@ func (this *SmsAliyun) Init() {
 	this.Client, _ = sdk.NewClientWithAccessKey("cn-hangzhou", this.Config.Appid, this.Config.Secret)
 }
 
-func (this *SmsAliyun) Send(mobile, action string) error {
+func (this *SmsAliyun) Send(mobile, action string) (string, error) {
 	code := this.getSmsCode(mobile, action)
 
 	request := requests.NewCommonRequest()
@@ -42,23 +42,23 @@ func (this *SmsAliyun) Send(mobile, action string) error {
 	response, err := this.Client.ProcessCommonRequest(request)
 	if err != nil {
 		gooLog.Error("[aliyun-sms]", "[send-error]", request.String(), err.Error())
-		return err
+		return "", err
 	}
 
 	rsp := map[string]string{}
 	if err := json.Unmarshal(response.GetHttpContentBytes(), &rsp); err != nil {
 		gooLog.Error("[aliyun-sms]", "[send-error]", request.String(), err.Error())
-		return err
+		return "", err
 	}
 
 	if rsp["Code"] != "OK" {
 		gooLog.Error("[aliyun-sms]", "[send-error]", request.String(), rsp)
-		return errors.New(rsp["Message"])
+		return "", errors.New(rsp["Message"])
 	}
 
 	__cache.setCode(this.Config.Appid, mobile, action, code, expireIn*time.Second)
 
-	return nil
+	return code, nil
 }
 
 func (this *SmsAliyun) Verify(mobile, action, code string) error {
