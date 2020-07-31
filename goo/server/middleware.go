@@ -42,6 +42,7 @@ func logger(g *GinEngine) gin.HandlerFunc {
 		bf.WriteString(fmt.Sprintf("\"body\":\"%s\",", body))
 		bf.WriteString(fmt.Sprintf("\"authorization\":\"%s\",", c.GetHeader("Authorization")))
 		bf.WriteString(fmt.Sprintf("\"x-request-id\":\"%s\",", c.GetHeader("X-Request-Id")))
+		bf.WriteString(fmt.Sprintf("\"x-request-source\":\"%s\",", c.GetHeader("X-Request-Source")))
 		bf.WriteString(fmt.Sprintf("\"x-request-timestamp\":\"%s\",", c.GetHeader("X-Request-Timestamp")))
 		bf.WriteString(fmt.Sprintf("\"x-request-sign\":\"%s\",", c.GetHeader("X-Request-Sign")))
 		bf.WriteString(fmt.Sprintf("\"content-type\":\"%s\",", c.ContentType()))
