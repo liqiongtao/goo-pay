@@ -56,7 +56,7 @@ func logger(g *GinEngine) gin.HandlerFunc {
 		bf.WriteString(fmt.Sprintf("\"execution_time\":\"%dms\"", (time.Now().UnixNano()-start.UnixNano())/1e6))
 		bf.WriteString("}")
 
-		if ok && rsp.(Response).Code != 0 {
+		if ok && rsp.(Response).Status == 0 {
 			gooLog.Error(bf.String())
 		} else {
 			gooLog.Debug(bf.String())
