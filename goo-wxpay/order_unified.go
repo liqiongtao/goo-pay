@@ -21,7 +21,7 @@ type UnifiedOrderRequest struct {
 	Detail         string    `xml:"detail"`
 	Attach         string    `xml:"attach"`
 	OutTradeNo     string    `xml:"out_trade_no"`
-	TotalFee       int64       `xml:"total_fee"`
+	TotalFee       int64     `xml:"total_fee"`
 	SpbillCreateIp string    `xml:"spbill_create_ip"`
 	GoodsTag       string    `xml:"goods_tag"`
 	NotifyUrl      string    `xml:"notify_url"`
@@ -89,6 +89,8 @@ func (uo *UnifiedOrderResponse) toJsApi(apiKey string, signType SignType) map[st
 	} else if signType == SIGN_TYPE_MD5 {
 		data["paySign"] = strings.ToUpper(gooUtils.MD5([]byte(str)))
 	}
+
+	data["timestamp"] = data["timeStamp"]
 
 	return data
 }

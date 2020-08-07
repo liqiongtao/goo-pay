@@ -56,6 +56,10 @@ func AutoRefreshCGIAccessToken(appid, secret string) {
 
 	goo.AsyncFunc(func() {
 		for range t.C {
+			if goo.IsExit() {
+				break
+			}
+			
 			accessToken, err := GetCGIAccessToken(appid, secret)
 
 			if err != nil {

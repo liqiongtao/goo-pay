@@ -24,7 +24,9 @@ func GetCGITicket(appid, secret string) (string, error) {
 
 	ttl := int64(__cache.TTL(key).Val().Seconds())
 	if ttl > 30 {
-		return __cache.Get(key).Val(), nil
+		ticket := __cache.Get(key).Val()
+		gooLog.Debug(fmt.Sprintf("wx_appid=%s wx_ticket=%s", appid, ticket))
+		return ticket, nil
 	}
 
 	muGetCGITicket.Lock()
@@ -50,6 +52,8 @@ func GetCGITicket(appid, secret string) (string, error) {
 		gooLog.Error(err.Error())
 		return "", err
 	}
+
+	gooLog.Debug(fmt.Sprintf("wx_appid=%s wx_ticket=%s wx_accessToken=%s", appid, rsp.Ticket, accessToken))
 
 	return rsp.Ticket, nil
 }

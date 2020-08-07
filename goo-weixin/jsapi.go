@@ -28,10 +28,14 @@ func JsApi(appid, secret, urlStr string) goo.Params {
 		"timestamp": ts,
 		"nonceStr":  nonceStr,
 		"signature": rawstr,
-		"jsApiList": []string{"checkJsApi", "onMenuShareTimeline", "onMenuShareAppMessage", "chooseWXPay"},
+		"jsApiList": []string{"checkJsApi", "onMenuShareTimeline", "onMenuShareAppMessage", "chooseWXPay",
+			"openLocation", "getLocation", "chooseImage", "previewImage", "uploadImage", "downloadImage",
+			"startRecord", "stopRecord", "onVoiceRecordEnd", "playVoice", "pauseVoice", "stopVoice",
+			"onVoicePlayEnd", "uploadVoice", "downloadVoice", "translateVoice", "getNetworkType", "scanQRCode",
+			"addCard", "chooseCard", "openCard"},
 	}
 
-	gooLog.Debug("wx.jsapi:", params.Json())
+	gooLog.Debug(fmt.Sprintf("wx_jsapi=%s urlStr=%s", string(params.Json()), urlStr))
 
 	return params
 }

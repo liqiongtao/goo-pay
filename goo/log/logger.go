@@ -57,7 +57,7 @@ func (l *Logger) output(level Level, v ...interface{}) {
 	}
 
 	if level >= LEVEL_ERROR {
-		for i := 4; i < 12; i++ {
+		for i := 3; i < 14; i++ {
 			if _, file, line, ok := runtime.Caller(i); ok {
 				filename := strings.Split(file, "src/")[1]
 				if strings.Index(filename, "vendor") != -1 ||
