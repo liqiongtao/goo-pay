@@ -4,76 +4,49 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"googo.io/goo"
 	gooHttp "googo.io/goo/http"
 	gooLog "googo.io/goo/log"
-	"sync"
 	"time"
 )
 
-type cgiAccessToken struct {
-	AccessToken string `json:"access_token"`
-	ExpiresIn   int64  `json:"expires_in"`
-	ErrCode     int    `json:"errcode"`
-	ErrMsg      string `json:"errmsg"`
+type cgiToken struct {
+	Appid  string
+	Secret string
 }
 
-var muGetCGIAccessToken sync.Mutex
+func CGIToken(appid, secret string) *cgiToken {
+	return &cgiToken{Appid: appid, Secret: secret}
+}
 
-func GetCGIAccessToken(appid, secret string) (string, error) {
-	key := fmt.Sprintf(cgi_token_key, appid)
+func (this *cgiToken) Get() string {
+	key := fmt.Sprintf(cgi_token_key, this.Appid)
+	return __cache.Get(key).Val()
+}
 
-	ttl := int64(__cache.TTL(key).Val().Seconds())
-	if ttl > 60 {
-		return __cache.Get(key).Val(), nil
-	}
+func (this *cgiToken) TTL() time.Duration {
+	key := fmt.Sprintf(cgi_token_key, this.Appid)
+	return __cache.TTL(key).Val()
+}
 
-	muGetCGIAccessToken.Lock()
-	defer muGetCGIAccessToken.Unlock()
+func (this *cgiToken) Set() error {
+	buf, _ := gooHttp.NewRequest().Get(fmt.Sprintf(cgi_token_url, this.Appid, this.Secret))
 
-	rsp := &cgiAccessToken{}
-	buf, _ := gooHttp.NewRequest().Get(fmt.Sprintf(cgi_token_url, appid, secret))
+	rsp := struct {
+		AccessToken string `json:"access_token"`
+		ExpiresIn   int64  `json:"expires_in"`
+		ErrCode     int    `json:"errcode"`
+		ErrMsg      string `json:"errmsg"`
+	}{}
 
-	if err := json.Unmarshal(buf, rsp); err != nil {
+	if err := json.Unmarshal(buf, &rsp); err != nil {
 		gooLog.Error(err.Error())
-		return "", err
+		return err
 	}
-
 	if errCode := rsp.ErrCode; errCode != 0 {
 		gooLog.Error(rsp.ErrMsg)
-		return "", errors.New(rsp.ErrMsg)
-	}
-	if err := __cache.Set(key, rsp.AccessToken, time.Duration(rsp.ExpiresIn)*time.Second).Err(); err != nil {
-		gooLog.Error(err.Error())
-		return "", err
+		return errors.New(rsp.ErrMsg)
 	}
 
-	return rsp.AccessToken, nil
-}
-
-func AutoRefreshCGIAccessToken(appid, secret string) {
-	t := time.NewTicker(300 * time.Second)
-
-	goo.AsyncFunc(func() {
-		for range t.C {
-			if goo.IsExit() {
-				break
-			}
-			
-			accessToken, err := GetCGIAccessToken(appid, secret)
-
-			if err != nil {
-				gooLog.Error(
-					fmt.Sprintf("appid=%s", appid),
-					err.Error(),
-				)
-				continue
-			}
-
-			gooLog.Debug(
-				fmt.Sprintf("appid=%s", appid),
-				fmt.Sprintf("cgi-access-token=%s", accessToken),
-			)
-		}
-	})
+	key := fmt.Sprintf(cgi_token_key, this.Appid)
+	return __cache.Set(key, rsp.AccessToken, time.Duration(rsp.ExpiresIn)*time.Second).Err()
 }

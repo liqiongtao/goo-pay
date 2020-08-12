@@ -76,11 +76,7 @@ func MinipUserInfo(sessionKey, encryptedData, iv string) (*MinipUserInfoResponse
 // ---------------------------------
 
 func SendTemplateMessage(appid, secret, openid, templateId, page, formId string, data interface{}) error {
-	accessToken, err := GetCGIAccessToken(appid, secret)
-	if err != nil {
-		return err
-	}
-
+	accessToken := CGIToken(appid, secret).Get()
 	params := goo.Params{
 		"access_token": accessToken,
 		"touser":       openid,

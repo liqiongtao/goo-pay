@@ -3,8 +3,6 @@ package gooWXPay
 import (
 	"encoding/xml"
 	"errors"
-	gooUtils "googo.io/goo/utils"
-	"strings"
 )
 
 type OrderPayData struct {
@@ -38,7 +36,7 @@ type OrderPayData struct {
 	TimeEnd            string    `xml:"time_end"`
 }
 
-func OrderPayNotify(buf []byte, apiKey string) (*OrderPayData, error) {
+func OrderPayNotify(buf []byte) (*OrderPayData, error) {
 	data := &OrderPayData{}
 
 	if err := xml.Unmarshal(buf, data); err != nil {
@@ -51,19 +49,19 @@ func OrderPayNotify(buf []byte, apiKey string) (*OrderPayData, error) {
 		return nil, errors.New(data.ErrCodeDes)
 	}
 
-	params := xml2map(buf)
-	str := map2querystring(params) + "&key=" + apiKey
+	// params := xml2map(buf)
+	// str := map2querystring(params) + "&key=" + apiKey
 
-	var signStr string
-	if data.SignType == SIGN_TYPE_MD5 {
-		signStr = strings.ToUpper(gooUtils.MD5([]byte(str)))
-	} else {
-		signStr = strings.ToUpper(gooUtils.HMacSha256([]byte(str), []byte(apiKey)))
-	}
-
-	if signStr != data.Sign {
-		return nil, errors.New("签名验证失败")
-	}
+	// var signStr string
+	// if data.SignType == SIGN_TYPE_MD5 {
+	// 	signStr = strings.ToUpper(gooUtils.MD5([]byte(str)))
+	// } else {
+	// 	signStr = strings.ToUpper(gooUtils.HMacSha256([]byte(str), []byte(apiKey)))
+	// }
+	//
+	// if signStr != data.Sign {
+	// 	return nil, errors.New("签名验证失败")
+	// }
 
 	return data, nil
 }

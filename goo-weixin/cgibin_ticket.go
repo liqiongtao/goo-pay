@@ -5,55 +5,46 @@ import (
 	"errors"
 	"fmt"
 	gooHttp "googo.io/goo/http"
-	gooLog "googo.io/goo/log"
-	"sync"
 	"time"
 )
 
 type cgiTicket struct {
-	Ticket    string `json:"ticket"`
-	ExpiresIn int64  `json:"expires_in"`
-	ErrCode   int    `json:"errcode"`
-	ErrMsg    string `json:"errmsg"`
+	Appid  string
+	Secret string
 }
 
-var muGetCGITicket sync.Mutex
+func CGITicket(appid, secret string) *cgiTicket {
+	return &cgiTicket{Appid: appid, Secret: secret}
+}
 
-func GetCGITicket(appid, secret string) (string, error) {
-	key := fmt.Sprintf(cgi_ticket_key, appid)
+func (this *cgiTicket) Get() string {
+	key := fmt.Sprintf(cgi_ticket_key, this.Appid)
+	return __cache.Get(key).Val()
+}
 
-	ttl := int64(__cache.TTL(key).Val().Seconds())
-	if ttl > 30 {
-		ticket := __cache.Get(key).Val()
-		gooLog.Debug(fmt.Sprintf("wx_appid=%s wx_ticket=%s", appid, ticket))
-		return ticket, nil
-	}
+func (this *cgiTicket) TTL() time.Duration {
+	key := fmt.Sprintf(cgi_ticket_key, this.Appid)
+	return __cache.TTL(key).Val()
+}
 
-	muGetCGITicket.Lock()
-	defer muGetCGITicket.Unlock()
-
-	accessToken, err := GetCGIAccessToken(appid, secret)
-	if err != nil {
-		return "", err
-	}
-
-	rsp := &cgiTicket{}
+func (this *cgiTicket) Set() error {
+	accessToken := CGIToken(this.Appid, this.Secret).Get()
 	buf, _ := gooHttp.NewRequest().Get(fmt.Sprintf(cgi_ticket_url, accessToken))
 
-	if err := json.Unmarshal(buf, rsp); err != nil {
-		gooLog.Error(err.Error())
-		return "", err
+	rsp := struct {
+		Ticket    string `json:"ticket"`
+		ExpiresIn int64  `json:"expires_in"`
+		ErrCode   int    `json:"errcode"`
+		ErrMsg    string `json:"errmsg"`
+	}{}
+
+	if err := json.Unmarshal(buf, &rsp); err != nil {
+		return err
 	}
 	if errCode := rsp.ErrCode; errCode != 0 {
-		gooLog.Error(rsp.ErrMsg)
-		return "", errors.New(rsp.ErrMsg)
-	}
-	if err := __cache.Set(key, rsp.Ticket, time.Duration(rsp.ExpiresIn)*time.Second).Err(); err != nil {
-		gooLog.Error(err.Error())
-		return "", err
+		return errors.New(rsp.ErrMsg)
 	}
 
-	gooLog.Debug(fmt.Sprintf("wx_appid=%s wx_ticket=%s wx_accessToken=%s", appid, rsp.Ticket, accessToken))
-
-	return rsp.Ticket, nil
+	key := fmt.Sprintf(cgi_ticket_key, this.Appid)
+	return __cache.Set(key, rsp.Ticket, time.Duration(rsp.ExpiresIn)*time.Second).Err()
 }

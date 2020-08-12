@@ -9,10 +9,7 @@ import (
 )
 
 func MenuCreate(appid, secret, content string) error {
-	accessToken, err := GetCGIAccessToken(appid, secret)
-	if err != nil {
-		return err
-	}
+	accessToken := CGIToken(appid, secret).Get()
 
 	menuCreateUrl := fmt.Sprintf(menu_create_url, accessToken)
 	buf, err := gooHttp.NewRequest().JsonContentType().Post(menuCreateUrl, []byte(content))
@@ -32,10 +29,7 @@ func MenuCreate(appid, secret, content string) error {
 }
 
 func MenuGet(appid, secret string) (string, error) {
-	accessToken, err := GetCGIAccessToken(appid, secret)
-	if err != nil {
-		return "", err
-	}
+	accessToken := CGIToken(appid, secret).Get()
 
 	menuGetrl := fmt.Sprintf(menu_get_url, accessToken)
 	buf, err := gooHttp.NewRequest().JsonContentType().Get(menuGetrl)
@@ -55,10 +49,7 @@ func MenuGet(appid, secret string) (string, error) {
 }
 
 func MenuDelete(appid, secret string) error {
-	accessToken, err := GetCGIAccessToken(appid, secret)
-	if err != nil {
-		return err
-	}
+	accessToken := CGIToken(appid, secret).Get()
 
 	menuDeleteUrl := fmt.Sprintf(menu_del_url, accessToken)
 	buf, err := gooHttp.NewRequest().JsonContentType().Post(menuDeleteUrl, nil)

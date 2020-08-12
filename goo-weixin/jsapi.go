@@ -11,7 +11,7 @@ import (
 )
 
 func JsApi(appid, secret, urlStr string) goo.Params {
-	ticket, _ := GetCGITicket(appid, secret)
+	ticket := CGITicket(appid, secret).Get()
 
 	ts := time.Now().Unix()
 	nonceStr := gooUtils.NonceStr()
