@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "common.message.proto";
+
+package rpc_goo;
+
+service SmsService {
+    rpc Send (SmsSendParams) returns (SmsSendResponse) {
+    }
+    rpc Verify (SmsVerifyParams) returns (Response) {
+    }
+}
+
+message SmsSendParams {
+    string mobile = 2;
+    string action = 3;
+}
+
+message SmsSendResponse {
+    int32 err_code = 1;
+    string err_msg = 2;
+    string id = 3;
+}
+
+message SmsVerifyParams {
+    string mobile = 2;
+    string action = 3;
+    string id = 4;
+    string code = 5;
+}

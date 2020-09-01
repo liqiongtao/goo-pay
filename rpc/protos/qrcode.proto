@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "common.message.proto";
+
+package rpc_goo;
+
+service QRCodeService {
+    rpc Get (QRCodeGetParams) returns (QRCodeGetResponse) {
+    }
+}
+
+message QRCodeGetParams {
+    string url = 1;
+    int32 size = 2;
+}
+
+message QRCodeGetResponse {
+    int32 err_code = 1;
+    string err_msg = 2;
+    string base64image = 3;
+}

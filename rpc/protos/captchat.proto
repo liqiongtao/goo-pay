@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "common.message.proto";
+
+package rpc_goo;
+
+service CaptchaService {
+    rpc Get (CaptchaGetParams) returns (CaptchaGetResponse) {
+    }
+    rpc Verify (CaptchaVerifyParams) returns (Response) {
+    }
+}
+
+message CaptchaGetParams {
+    int32 width = 1;
+    int32 height = 2;
+}
+
+message CaptchaGetResponse {
+    string id = 1;
+    string base64image = 2;
+}
+
+message CaptchaVerifyParams {
+    string id = 1;
+    string code = 2;
+}

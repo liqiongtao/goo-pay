@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package rpc_goo;
+
+message NullResponse {
+}
+
+message Response {
+    int32 err_code = 1;
+    string err_msg = 2;
+}

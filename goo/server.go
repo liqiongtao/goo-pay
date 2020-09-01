@@ -15,24 +15,32 @@ func Handler(controller gooServer.IController) gin.HandlerFunc {
 }
 
 func Exception(code int, message string) {
-	panic(gooServer.Response{
+	panic(ExceptionJSON(code, message))
+}
+
+func ExceptionJSON(code int, message string) gooServer.Response {
+	return gooServer.Response{
 		Status:  0,
 		Code:    code,
 		Message: message,
 		Data:    map[string]string{},
-	})
+	}
 }
 
 func Success(data interface{}) {
+	panic(SuccessJSON(data))
+}
+
+func SuccessJSON(data interface{}) gooServer.Response {
 	if data == nil {
 		data = map[string]string{}
 	}
-	panic(gooServer.Response{
+	return gooServer.Response{
 		Status:  1,
 		Code:    200,
 		Message: "ok",
 		Data:    data,
-	})
+	}
 }
 
 func AsyncFunc(fn func()) {

@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+import "common.message.proto";
+
+package rpc_goo;
+
+service UploadService {
+    rpc UploadOss (UploadOssParams) returns (UploadResponse) {
+    }
+
+    rpc UploadLocal (UploadLocalParams) returns (UploadResponse) {
+    }
+}
+
+message AliyunOss {
+    string access_key_id = 1;
+    string access_key_secret = 2;
+    string endpoint = 3;
+    string bucket = 4;
+}
+
+message UploadOssParams {
+    AliyunOss aliyun_oss = 1;
+    string filename = 2;
+    bytes body = 3;
+}
+
+message UploadLocalParams {
+    string file_name = 2;
+    bytes body = 3;
+}
+
+message UploadResponse {
+    int32 err_code = 1;
+    string err_msg = 2;
+    string id = 3;
+}
