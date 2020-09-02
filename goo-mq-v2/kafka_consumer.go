@@ -1,4 +1,4 @@
-package gooMQ
+package gooMQ_v2
 
 import (
 	"fmt"
@@ -9,12 +9,12 @@ import (
 
 type KafkaConsumer struct {
 	*Kafka
-	Topic  string
-	Output chan []byte
-	sync.WaitGroup
+	Topic   string
+	Handler HandlerFunc
+	wg      sync.WaitGroup
 }
 
-func (this *KafkaConsumer) getConfig() *sarama.Config {
+func (this *KafkaConsumer) config() *sarama.Config {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 	config.Version = sarama.V0_10_2_0
@@ -22,20 +22,20 @@ func (this *KafkaConsumer) getConfig() *sarama.Config {
 }
 
 func (this *KafkaConsumer) Consume() error {
-	consumer, err := sarama.NewConsumer(this.Addrs, this.getConfig())
+	consumer, err := sarama.NewConsumer(this.Addrs, this.config())
+	if err != nil {
+		gooLog.Error("[kafka-consumer-error]", err.Error())
+		panic(err.Error())
+	}
+
+	partitions, err := consumer.Partitions(this.Topic)
 	if err != nil {
 		gooLog.Error("[kafka-consumer-error]", err.Error())
 		return err
 	}
 
-	go func() {
+	go func(partitions []int32) {
 		defer consumer.Close()
-
-		partitions, err := consumer.Partitions(this.Topic)
-		if err != nil {
-			gooLog.Error("[kafka-consumer-error]", err.Error())
-			return
-		}
 
 		for _, partition := range partitions {
 			pc, err := consumer.ConsumePartition(this.Topic, partition, sarama.OffsetNewest)
@@ -43,28 +43,31 @@ func (this *KafkaConsumer) Consume() error {
 				gooLog.Error("[kafka-consumer-error]", err.Error())
 				continue
 			}
-			this.WaitGroup.Add(1)
-			go this.ConsumePartition(pc)
+			this.wg.Add(1)
+			go this.message(pc)
 		}
 
-		this.WaitGroup.Wait()
-	}()
+		this.wg.Wait()
+	}(partitions)
 
 	return nil
 }
 
-func (this *KafkaConsumer) ConsumePartition(pc sarama.PartitionConsumer) {
-	defer this.WaitGroup.Done()
+func (this *KafkaConsumer) message(pc sarama.PartitionConsumer) {
+	defer this.wg.Done()
 	defer pc.Close()
 
 	for {
 		select {
 		case msg := <-pc.Messages():
-			this.Output <- msg.Value
-			gooLog.Debug("[kafka-consume-succ]", fmt.Sprintf("partitions=%d topic=%s offset=%d key=%s value=%s",
-				msg.Partition, msg.Topic, msg.Offset, string(msg.Key), string(msg.Value)))
+			this.Handler(msg.Value)
+			gooLog.Debug("[kafka-consume-succ]",
+				fmt.Sprintf("partitions=%d topic=%s offset=%d key=%s value=%s",
+					msg.Partition, msg.Topic, msg.Offset, string(msg.Key), string(msg.Value)))
+
 		case err := <-pc.Errors():
 			gooLog.Error("[kafka-consumer-error]", err.Error())
+
 		case <-this.Context.Done():
 			return
 		}

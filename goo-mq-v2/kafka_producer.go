@@ -1,19 +1,20 @@
-package gooMQ
+package gooMQ_v2
 
 import (
 	"fmt"
 	"github.com/Shopify/sarama"
 	gooLog "googo.io/goo/log"
-	"log"
+	"sync"
 	"time"
 )
 
 type KafkaProducer struct {
-	Kafka
+	*Kafka
 	producer sarama.AsyncProducer
+	rwmu     sync.RWMutex
 }
 
-func (this *KafkaProducer) getConfig() *sarama.Config {
+func (this *KafkaProducer) config() *sarama.Config {
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	config.Producer.Partitioner = sarama.NewRandomPartitioner
@@ -24,31 +25,53 @@ func (this *KafkaProducer) getConfig() *sarama.Config {
 	return config
 }
 
-func (this *KafkaProducer) Init() {
-	producer, err := sarama.NewAsyncProducer(this.Addrs, this.getConfig())
-	if err != nil {
-		gooLog.Error("[kafka-producer-error]", err.Error())
-		log.Panic(err.Error())
+func (this *KafkaProducer) setProducer() sarama.AsyncProducer {
+	this.rwmu.Lock()
+	defer this.rwmu.Unlock()
+
+	if this.producer != nil {
+		return this.producer
 	}
 
-	this.producer = producer
+	producer, err := sarama.NewAsyncProducer(this.Addrs, this.config())
+	if err != nil {
+		gooLog.Error("[kafka-producer-error]", err.Error())
+		panic(err.Error())
+	}
 
 	go func() {
 		for {
 			select {
-			case suc := <-this.producer.Successes():
-				gooLog.Debug("[kafka-async-producer-succ]", fmt.Sprintf("partitions=%d topic=%s offset=%d value=%s",
-					suc.Partition, suc.Topic, suc.Offset, suc.Value))
-			case err := <-this.producer.Errors():
+			case suc := <-producer.Successes():
+				gooLog.Debug("[kafka-async-producer-succ]",
+					fmt.Sprintf("partitions=%d topic=%s offset=%d value=%s",
+						suc.Partition, suc.Topic, suc.Offset, suc.Value))
+				
+			case err := <-producer.Errors():
 				gooLog.Error("[kafka-async-producer-error]", err.Error())
+
 			case <-this.Context.Done():
 				return
 			}
 		}
 	}()
+
+	this.producer = producer
+	return this.producer
+}
+
+func (this *KafkaProducer) getProducer() sarama.AsyncProducer {
+	this.rwmu.RLock()
+	defer this.rwmu.RUnlock()
+
+	return this.producer
 }
 
 func (this *KafkaProducer) SendMessage(topic string, value []byte) error {
+	if this.getProducer() == nil {
+		this.setProducer()
+	}
+
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
 		Value: sarama.ByteEncoder(value),

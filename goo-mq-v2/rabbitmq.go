@@ -1,4 +1,4 @@
-package gooMQ
+package gooMQ_v2
 
 import (
 	"github.com/streadway/amqp"
