@@ -3,65 +3,74 @@ package gooMQ
 import (
 	"fmt"
 	"github.com/Shopify/sarama"
-	gooLog "googo.io/goo/log"
+	"googo.io/goo/log"
 )
 
 type KafkaConsumerGroup struct {
 	*Kafka
 	GroupId string
-	Topics  []string
-	Output  chan []byte
+	Handler HandlerFunc
 }
 
-func (this *KafkaConsumerGroup) config() *sarama.Config {
+func (*KafkaConsumerGroup) config() *sarama.Config {
 	config := sarama.NewConfig()
 	config.Consumer.Offsets.Initial = sarama.OffsetOldest
 	config.Version = sarama.V0_10_2_0
 	return config
 }
 
-func (this *KafkaConsumerGroup) Consume() error {
-	cg, err := sarama.NewConsumerGroup(this.Addrs, this.GroupId, this.config())
+func (cg *KafkaConsumerGroup) Init() {
+	gooLog.Debug("[kafka-consumer-group-init]")
+}
+
+func (cg *KafkaConsumerGroup) Consume(topics []string, handler HandlerFunc) error {
+	c, err := sarama.NewConsumerGroup(cg.Addrs, cg.GroupId, cg.config())
 	if err != nil {
 		gooLog.Error("[kafka-consumer-group-error]", err.Error())
 		return err
 	}
+	defer c.Close()
 
-	go func() {
-		defer cg.Close()
-		for {
-			if err := cg.Consume(this.Context, this.Topics, this); err != nil {
-				gooLog.Error("[kafka-consumer-group-error]", err.Error())
-				continue
-			}
-			if err := this.Context.Err(); err != nil {
-				break
-			}
+	cg.Handler = handler
+
+	for {
+		if err := c.Consume(cg.Context, topics, cg); err != nil {
+			gooLog.Error("[kafka-consumer-group-error]", err.Error())
+			continue
 		}
-	}()
+		if err := cg.Context.Err(); err != nil {
+			break
+		}
+	}
 
 	return nil
 }
 
-func (this *KafkaConsumerGroup) Setup(sess sarama.ConsumerGroupSession) error {
-	return nil
+func (cg *KafkaConsumerGroup) Setup(sess sarama.ConsumerGroupSession) (err error) {
+	return
 }
 
-func (this *KafkaConsumerGroup) Cleanup(sess sarama.ConsumerGroupSession) error {
-	return nil
+func (cg *KafkaConsumerGroup) Cleanup(sess sarama.ConsumerGroupSession) (err error) {
+	return
 }
 
-func (this *KafkaConsumerGroup) ConsumeClaim(sess sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+func (cg *KafkaConsumerGroup) ConsumeClaim(sess sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) (err error) {
 	for msg := range claim.Messages() {
-		this.Output <- msg.Value
+		flag := cg.Handler(msg.Value)
+
+		if !flag {
+			// 重置位移
+			sess.ResetOffset(msg.Topic, msg.Partition, msg.Offset, "")
+			return
+		}
 
 		// 更新位移
 		sess.MarkMessage(msg, "")
 
-		gooLog.Debug("[kafka-consume-group-succ]",
+		gooLog.Debug("[kafka-consumer-group-success]",
 			fmt.Sprintf("partitions=%d topic=%s offset=%d key=%s groupid=%s value=%s",
-				msg.Partition, msg.Topic, msg.Offset, string(msg.Key), sess.MemberID(), string(msg.Value)))
+				msg.Partition, msg.Topic, msg.Offset-1, string(msg.Key), cg.GroupId, string(msg.Value)))
 	}
 
-	return nil
+	return
 }

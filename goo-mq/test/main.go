@@ -3,30 +3,27 @@ package main
 import (
 	"context"
 	"fmt"
-	"googo.io/goo-mq"
-	gooLog "googo.io/goo/log"
+	gooMQ "googo.io/goo-mq"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
-	"time"
 )
 
 var (
-	topic = "test"
-	addrs = []string{"s100:9092"}
-
-	wg sync.WaitGroup
+	topic  = "test"
+	topics = []string{"test"}
+	addrs  = []string{"s100:9092"}
 
 	sig         = make(chan os.Signal)
 	ctx, cancel = context.WithCancel(context.Background())
 )
 
 func init() {
-	gooMQ.Init(&gooMQ.Kafka{
-		Context: ctx,
-		Addrs:   addrs,
-	})
+	gooMQ.Init(&gooMQ.Kafka{Context: ctx, Addrs: addrs})
+	// gooMQ.Init(&gooMQ.KafkaProducer{})
+	// gooMQ.Init(&gooMQ.KafkaConsumer{})
+	// gooMQ.Init(&gooMQ.KafkaConsumerGroup{})
 
 	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)
 	go func() {
@@ -42,77 +39,46 @@ func init() {
 }
 
 func main() {
-	wg.Add(1)
-	go publish()
-	wg.Add(1)
-	go publish()
-	wg.Add(1)
-	go publish()
+	var wg sync.WaitGroup
+
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			gooMQ.SendMessage(topic, []byte(fmt.Sprintf("msg-%d", i)))
+		}(i)
+	}
 
 	wg.Add(1)
-	go consume()
-	wg.Add(1)
-	go consume()
-	wg.Add(1)
-	go consume()
+	go func() {
+		defer wg.Done()
+		gooMQ.Consume(topic, func(data []byte) bool {
+			return true
+		})
+	}()
 
 	wg.Add(1)
-	go consumeGroup("A100")
+	go func() {
+		defer wg.Done()
+		gooMQ.Consume(topic, func(data []byte) bool {
+			return true
+		})
+	}()
+
 	wg.Add(1)
-	go consumeGroup("A100")
+	go func() {
+		defer wg.Done()
+		gooMQ.ConsumeGroup("A100", topics, func(data []byte) bool {
+			return true
+		})
+	}()
 	wg.Add(1)
-	go consumeGroup("A101")
-	wg.Add(1)
-	go consumeGroup("A101")
+	go func() {
+		defer wg.Done()
+		gooMQ.ConsumeGroup("A101", topics, func(data []byte) bool {
+			return true
+		})
+	}()
 
 	wg.Wait()
-}
-
-func publish() {
-	defer wg.Done()
-
-	for i := 0; i < 3; i++ {
-		msg := []byte(fmt.Sprintf("msg-%d", i))
-		if err := gooMQ.SendMessage(topic, msg); err != nil {
-			gooLog.Error(err.Error())
-		}
-		time.Sleep(1 * time.Second)
-	}
-}
-
-func consume() {
-	defer wg.Done()
-
-	ch, err := gooMQ.Consume(topic)
-	if err != nil {
-		gooLog.Error(err.Error())
-		return
-	}
-
-	for {
-		select {
-		case buf := <-ch:
-			gooLog.Debug(">>aa>>", string(buf))
-		case <-ctx.Done():
-			return
-		}
-	}
-}
-
-func consumeGroup(groupId string) {
-	defer wg.Done()
-
-	ch, err := gooMQ.ConsumeGroup(groupId, []string{topic})
-	if err != nil {
-		return
-	}
-
-	for {
-		select {
-		case buf := <-ch:
-			gooLog.Debug(">>"+groupId+">>", string(buf))
-		case <-ctx.Done():
-			return
-		}
-	}
 }

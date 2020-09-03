@@ -2,39 +2,37 @@ package gooMQ
 
 import (
 	"context"
+	"googo.io/goo/log"
+	"sync"
 )
 
 type Kafka struct {
-	Addrs []string
 	context.Context
+	Addrs    []string
 	producer *KafkaProducer
+	mu       sync.Mutex
 }
 
-func (this *Kafka) Init() {
-	this.producer = &KafkaProducer{
-		Kafka: this,
+func (k *Kafka) Init() {
+	gooLog.Debug("[kafka-init]")
+}
+
+func (k *Kafka) Producer() iProducer {
+	k.mu.Lock()
+	defer k.mu.Unlock()
+
+	if k.producer == nil {
+		k.producer = &KafkaProducer{Kafka: k}
+		k.producer.Init()
 	}
+
+	return k.producer
 }
 
-func (this *Kafka) SendMessage(topic string, value []byte) error {
-	return this.producer.SendMessage(topic, value)
+func (k *Kafka) Consumer() iConsumer {
+	return &KafkaConsumer{Kafka: k}
 }
 
-func (this *Kafka) Consume(topic string, data chan []byte) error {
-	consumer := &KafkaConsumer{
-		Kafka:  this,
-		Topic:  topic,
-		Output: data,
-	}
-	return consumer.Consume()
-}
-
-func (this *Kafka) ConsumeGroup(groupId string, topics []string, data chan []byte) error {
-	consumerGroup := &KafkaConsumerGroup{
-		Kafka:   this,
-		GroupId: groupId,
-		Topics:  topics,
-		Output:  data,
-	}
-	return consumerGroup.Consume()
+func (k *Kafka) ConsumerGroup(groupId string) iConsumerGroup {
+	return &KafkaConsumerGroup{Kafka: k, GroupId: groupId}
 }
