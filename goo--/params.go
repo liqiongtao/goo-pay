@@ -1,4 +1,4 @@
-package goo
+package goo__
 
 import (
 	"bytes"

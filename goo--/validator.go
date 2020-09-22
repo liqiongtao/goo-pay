@@ -1,4 +1,4 @@
-package goo
+package goo__
 
 import (
 	"fmt"
@@ -12,8 +12,10 @@ func ValidationMessage(err error, msgs map[string]string) string {
 		if msg, ok := msgs[key]; ok {
 			return msg
 		}
+
 		msg := fmt.Sprintf("%s %s", i.Field(), i.Tag())
 		return msg
 	}
+
 	return err.Error()
 }

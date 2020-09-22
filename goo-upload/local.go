@@ -1,7 +1,6 @@
 package gooUpload
 
 import (
-	gooUtils "googo.io/goo/utils"
 	"io/ioutil"
 	"os"
 	"path"

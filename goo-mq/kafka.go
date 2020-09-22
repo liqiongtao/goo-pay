@@ -2,7 +2,7 @@ package gooMQ
 
 import (
 	"context"
-	"googo.io/goo/log"
+	gooLog "github.com/liqiongtao/googo.io/goo/log"
 	"sync"
 )
 

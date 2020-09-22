@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	gooMQ "googo.io/goo-mq"
+	gooMQ "github.com/liqiongtao/googo.io/goo-mq"
 	"os"
 	"os/signal"
 	"sync"

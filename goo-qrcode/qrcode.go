@@ -1,7 +1,9 @@
 package gooQrcode
 
 import (
+	"encoding/base64"
 	"errors"
+	"fmt"
 	"net/url"
 
 	"github.com/gin-gonic/gin"
@@ -19,18 +21,18 @@ type Qrcode struct {
 	Url  string
 }
 
-func (this *Qrcode) Get() ([]byte, error) {
-	if this.Url == "" {
+func (qr *Qrcode) Get() ([]byte, error) {
+	if qr.Url == "" {
 		return nil, errors.New("url 为空")
 	}
 
-	if this.Size == 0 {
-		this.Size = DEFAULT_SIZE
+	if qr.Size == 0 {
+		qr.Size = DEFAULT_SIZE
 	}
 
-	this.Url, _ = url.QueryUnescape(this.Url)
+	qr.Url, _ = url.QueryUnescape(qr.Url)
 
-	png, err := qrcode.Encode(this.Url, qrcode.Medium, this.Size)
+	png, err := qrcode.Encode(qr.Url, qrcode.Medium, qr.Size)
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +40,16 @@ func (this *Qrcode) Get() ([]byte, error) {
 	return png, nil
 }
 
-func (this *Qrcode) Output(c gin.Context) error {
-	png, err := this.Get()
+func (qr *Qrcode) Base64Image() (string, error) {
+	png, err := qr.Get()
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("data:image/png;base64,%s", base64.StdEncoding.EncodeToString(png)), nil
+}
+
+func (qr *Qrcode) Output(c gin.Context) error {
+	png, err := qr.Get()
 	if err != nil {
 		return err
 	}

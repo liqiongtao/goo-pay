@@ -3,7 +3,7 @@ package gooMQ
 import (
 	"fmt"
 	"github.com/Shopify/sarama"
-	gooLog "googo.io/goo/log"
+	gooLog "github.com/liqiongtao/googo.io/goo/log"
 	"time"
 )
 

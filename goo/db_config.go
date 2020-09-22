@@ -1,6 +1,6 @@
-package gooDB
+package goo
 
-type Config struct {
+type DBConfig struct {
 	Driver   string   `yaml:"driver"`
 	Master   string   `yaml:"master"`
 	Slaves   []string `yaml:"slaves"`

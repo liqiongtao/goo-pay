@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	gooUtils "googo.io/goo/utils"
+	gooUtils "github.com/liqiongtao/googo.io/goo/utils"
 	"io/ioutil"
 	"os"
 	"path"

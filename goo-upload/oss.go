@@ -4,8 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	gooLog "googo.io/goo/log"
-	gooUtils "googo.io/goo/utils"
+	"log"
 	"path"
 )
 
@@ -15,7 +14,7 @@ func InitOSS(config OSSConfig) {
 	var err error
 	OSS, err = NewOSS(config)
 	if err != nil {
-		gooLog.Error(err.Error())
+		log.Panic(err.Error())
 	}
 }
 
@@ -48,7 +47,7 @@ type gooOSS struct {
 }
 
 func (this *gooOSS) Upload(filename string, body []byte) (string, error) {
-	md5str := gooUtils.MD5(body)
+	md5str := goo.Util.MD5(body)
 	filename = fmt.Sprintf("%s/%s/%s%s", md5str[0:2], md5str[2:4], md5str[8:24], path.Ext(filename))
 
 	if err := this.Bucket.PutObject(filename, bytes.NewReader(body)); err != nil {

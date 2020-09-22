@@ -2,20 +2,40 @@ package gooSms
 
 import (
 	"fmt"
-	"googo.io/goo"
+	"sync"
 	"time"
 )
 
 var __cache = cache{}
 
-type cache struct{}
-
-func (this cache) setCode(appid, mobile, action, code string, expireIn time.Duration) error {
-	key := fmt.Sprintf(codeKey, appid, mobile, action)
-	return goo.Redis().Set(key, code, expireIn).Err()
+type cache struct {
+	Data sync.Map
 }
 
-func (this cache) getCode(appid, mobile, action string) string {
-	key := fmt.Sprintf(codeKey, appid, mobile, action)
-	return goo.Redis().Get(key).Val()
+func (ca cache) set(appid, mobile, action, code string, expireIn int64) {
+	key := fmt.Sprintf("%s_%s_%s", appid, mobile, action)
+	ca.Data.Store(key, &codeInfo{Code: code, ExpireOut: time.Now().Unix() + expireIn})
+	go ca.recovery()
+}
+
+func (ca cache) get(appid, mobile, action string) *codeInfo {
+	defer func() {
+		go ca.recovery()
+	}()
+
+	key := fmt.Sprintf("%s_%s_%s", appid, mobile, action)
+	rst, ok := ca.Data.Load(key)
+	if !ok {
+		return nil
+	}
+	return rst.(*codeInfo)
+}
+
+func (ca cache) recovery() {
+	ca.Data.Range(func(k, v interface{}) bool {
+		if time.Now().Unix() > v.(*codeInfo).ExpireOut {
+			ca.Data.Delete(k)
+		}
+		return true
+	})
 }

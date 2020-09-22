@@ -1,11 +1,22 @@
-package gooCache
+package goo__
 
 import (
 	"github.com/go-redis/redis"
-	gooLog "googo.io/goo/log"
 )
 
-func NewRedis(cf Config) *redis.Client {
+type Redis struct {
+	redis.Client
+}
+
+func (r *Redis) init() {
+
+}
+
+func (r *Redis) New() {
+
+}
+
+func NewRedis(cf CacheConfig) *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     cf.Addr,
 		Password: cf.Password,
